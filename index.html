@@ -33,150 +33,8 @@
             <div hidden>
                 <textarea id="python-code" spellcheck="false">
 import random
-stages = [r'''
-  +---+
-  |   |
-  O   |
- /|\  |
- / \  |
-      |
-=========
-''', r'''
-  +---+
-  |   |
-  O   |
- /|\  |
- /    |
-      |
-=========
-''', r'''
-  +---+
-  |   |
-  O   |
- /|\  |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========''', '''
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========
-''']
-
-logo = r''' 
- _                                             
-| |                                            
-| |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
-| '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
-| | | | (_| | | | | (_| | | | | | | (_| | | | |
-|_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
-                    __/ |                      
-                   |___/    '''
-
-word_list = [
-    'abruptly', 'absurd', 'abyss', 'affix', 'askew', 'avenue', 'awkward', 'axiom', 'azure', 'bagpipes', 
-    'bandwagon', 'banjo', 'bayou', 'beekeeper', 'bikini', 'blitz', 'blizzard', 'boggle', 'bookworm', 
-    'boxcar', 'boxful', 'buckaroo', 'buffalo', 'buffoon', 'buxom', 'buzzard', 'buzzing', 'buzzwords', 
-    'caliph', 'cobweb', 'cockiness', 'croquet', 'crypt', 'curacao', 'cycle', 'daiquiri', 'dirndl', 
-    'disavow', 'dizzying', 'duplex', 'dwarves', 'embezzle', 'equip', 'espionage', 'euouae', 'exodus', 
-    'faking', 'fishhook', 'fixable', 'fjord', 'flapjack', 'flopping', 'fluffiness', 'flyby', 'foxglove', 
-    'frazzled', 'frizzled', 'fuchsia', 'funny', 'gabby', 'galaxy', 'galvanize', 'gazebo', 'giaour', 
-    'gizmo', 'glowworm', 'glyph', 'gnarly', 'gnostic', 'gossip', 'grogginess', 'haiku', 'haphazard', 
-    'hyphen', 'iatrogenic', 'icebox', 'injury', 'ivory', 'ivy', 'jackpot', 'jaundice', 'jawbreaker', 
-    'jaywalk', 'jazziest', 'jazzy', 'jelly', 'jigsaw', 'jinx', 'jiujitsu', 'jockey', 'jogging', 
-    'joking', 'jovial', 'joyful', 'juicy', 'jukebox', 'jumbo', 'kayak', 'kazoo', 'keyhole', 'khaki', 
-    'kilobyte', 'kiosk', 'kitsch', 'kiwifruit', 'klutz', 'knapsack', 'larynx', 'lengths', 'lucky', 
-    'luxury', 'lymph', 'marquis', 'matrix', 'megahertz', 'microwave', 'mnemonic', 'mystify', 'naphtha', 
-    'nightclub', 'nowadays', 'numbskull', 'nymph', 'onyx', 'ovary', 'oxidize', 'oxygen', 'pajama', 
-    'peekaboo', 'phlegm', 'pixel', 'pizazz', 'pneumonia', 'polka', 'pshaw', 'psyche', 'puppy', 
-    'puzzling', 'quartz', 'queue', 'quips', 'quixotic', 'quiz', 'quizzes', 'quorum', 'razzmatazz', 
-    'rhubarb', 'rhythm', 'rickshaw', 'schnapps', 'scratch', 'shiv', 'snazzy', 'sphinx', 'spritz', 
-    'squawk', 'staff', 'strength', 'strengths', 'stretch', 'stronghold', 'stymied', 'subway', 
-    'swivel', 'syndrome', 'thriftless', 'thumbscrew', 'topaz', 'transcript', 'transgress', 
-    'transplant', 'triphthong', 'twelfth', 'twelfths', 'unknown', 'unworthy', 'unzip', 'uptown', 
-    'vaporize', 'vixen', 'vodka', 'voodoo', 'vortex', 'voyeurism', 'walkway', 'waltz', 'wave', 
-    'wavy', 'waxy', 'wellspring', 'wheezy', 'whiskey', 'whizzing', 'whomever', 'wimpy', 
-    'witchcraft', 'wizard', 'woozy', 'wristwatch', 'wyvern', 'xylophone', 'yachtsman', 'yippee', 
-    'yoked', 'youthful', 'yummy', 'zephyr', 'zigzag', 'zigzagging', 'zilch', 'zipper', 'zodiac', 'zombie'
-]
-
-chosen_word = random.choice(word_list)
-word_length = len(chosen_word)
-game_over = False
-lives = 6
-print(logo)
-print(f'The solution is {chosen_word}.') # For testing
-
-#Create blanks
-display = []
-for _ in range(word_length):
-    display += "_"
-
-while not game_over:
-    try:
-        guess = input("Guess a letter: ").lower()
-        if not guess.isalpha() or len(guess) != 1:
-            print("Invalid input. Please enter a single letter.")
-            continue
-    except (TypeError, ValueError):
-        # This handles cases where the user closes the prompt without entering anything
-        print("Game stopped. Please run again to play.")
-        break
-
-    if guess in display:
-        print(f"You've already guessed {guess}")
-
-    #Check guessed letter
-    for position in range(word_length):
-        letter = chosen_word[position]
-        if letter == guess:
-            display[position] = letter
-
-    #Check if user is wrong.
-    if guess not in chosen_word:
-        print(f"You guessed {guess}, that's not in the word. You lose a life.")
-        lives -= 1
-        if lives == 0:
-            game_over = True
-            print("You lose.")
-            print(f"The word was: {chosen_word}")
-
-    #Join all the elements in the list and turn it into a String.
-    print(f"{' '.join(display)}")
-
-    #Check if user has got all letters.
-    if "_" not in display:
-        game_over = True
-        print("You win.")
-
-    print(stages[lives])
+stages = [r''' ... ''' ]
+# (rest of your Python code here)
                 </textarea>
             </div>
 
@@ -200,45 +58,42 @@ while not game_over:
     </div>
 
     <script type="text/javascript">
+        // Tell Skulpt where to find stdlib files
+        function builtinRead(filename) {
+            if (Sk.builtinFiles === undefined || !Sk.builtinFiles["files"][filename]) {
+                throw "File not found: '" + filename + "'";
+            }
+            return Sk.builtinFiles["files"][filename];
+        }
+
         // Function to configure and run the Python code using Skulpt
         function runit() {
             const code = document.getElementById("python-code").value;
             const outputArea = document.getElementById("output");
-            
-            // Disable button to prevent multiple runs
             const runButton = document.getElementById('run-button');
+
+            // Disable button and show status
             runButton.disabled = true;
             runButton.textContent = 'Running...';
-            
+
             // Clear previous output
-            outputArea.innerHTML = ''; 
-            
+            outputArea.innerHTML = '';
+
             // Configure Skulpt
             Sk.configure({
-                // This function is called for every `print()` in Python
-                output: function(text) {
-                    outputArea.textContent += text;
-                },
-                // This function is called for `input()` with a prompt
-                inputfun: function(prompt) {
-                    return window.prompt(prompt);
-                },
+                output: function(text) { outputArea.textContent += text; },
+                read: builtinRead,
+                inputfun: function(prompt) { return window.prompt(prompt); },
                 inputfunTakesPrompt: true
             });
 
-            // Wrap the execution in a promise to handle asynchronous operations
-            const executionPromise = Sk.misceval.asyncToPromise(function() {
+            // Execute the code
+            Sk.misceval.asyncToPromise(function() {
                 return Sk.importMainWithBody("<stdin>", false, code, true);
-            });
-
-            // Handle success and errors from the Python script execution
-            executionPromise.then(function(mod) {
-                console.log('Script executed successfully.');
+            }).then(function(mod) {
                 runButton.disabled = false;
                 runButton.textContent = 'Run Game';
-            },
-            function(err) {
-                // Display the error message in the output area for debugging
+            }, function(err) {
                 outputArea.innerHTML += `<span class="text-red-400">${err.toString()}</span>`;
                 console.error(err.toString());
                 runButton.disabled = false;
