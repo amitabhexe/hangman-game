@@ -45,148 +45,133 @@
 
     <!-- Brython game script -->
     <script type="text/python">
-import random
 from browser import document, window
-
-stages = ['''
-  +---+
-  |   |
-  O   |
- /|\  |
- / \  |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|\  |
- /    |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|\  |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========
-''', '''
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========
-''']
-
-logo = r"""
- _                                             
-| |                                            
-| |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
-| '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
-| | | | (_| | | | | (_| | | | | | | (_| | | | |
-|_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
-                    __/ |                      
-                   |___/   """
-
-word_list = [
-    'abruptly', 'absurd', 'abyss', 'affix', 'askew', 'avenue', 'awkward',
-    'axiom', 'azure', 'bagpipes', 'bandwagon', 'banjo', 'bayou', 'beekeeper',
-    # ... (rest of list) ...
-    'zodiac', 'zombie'
-]
-
-lives = 6
-
-# Display logo
-print(logo)
-
-# Game setup
-chosen_word = random.choice(word_list)
-placeholder = ['_' for _ in chosen_word]
-print("Word to guess: " + ' '.join(placeholder))
+import random
 
 def run_game(ev):
-    # Reinitialize game state on each run
+    stages = [r'''
+      +---+
+      |   |
+      O   |
+     /|\\  |
+     / \\  |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+      O   |
+     /|\\  |
+     /     |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+      O   |
+     /|\\  |
+          |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+      O   |
+     /|    |
+          |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+      O   |
+      |    |
+          |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+      O    |
+          |
+          |
+          |
+    =========
+    ''',
+    r'''
+      +---+
+      |   |
+          |
+          |
+          |
+          |
+    =========
+    ''']
+
+    logo = r''' 
+     _                                             
+    | |                                            
+    | |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
+    | '_ \\/ _` | '_ \\/ _` | '_ ` _ \\/ _` | '_ \\ 
+    | | | | (_| | | | | (_| | | | | | | (_| | | | |
+    |_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+                        __/ |                      
+                       |___/    '''
+
+    word_list = [
+        'abruptly', 'absurd', 'abyss', 'affix', 'askew', 'avenue', 'awkward',
+        'axiom', 'azure', 'bagpipes', 'bandwagon', 'banjo', 'bayou', 'beekeeper',
+        'bikini', 'blitz', 'blizzard', 'boggle', 'bookworm', 'boxcar', 'boxful'
+    ]
+
     lives = 6
     chosen_word = random.choice(word_list)
     placeholder = ['_' for _ in chosen_word]
+    correct_letters = []
+    game_over = False
 
     output = document['output']
-    output.text = ''  # Clear display
+    output.text = logo + "\n\n"
+    output.text += "Word to guess: " + ' '.join(placeholder) + "\n\n"
 
-    # Display logo and initial word
-    output.text += logo + '
-'
-    output.text += 'Word to guess: ' + ' '.join(placeholder) + '
-'
+    while not game_over:
+        output.text += f"\n****************************{lives}/6 LIVES LEFT****************************\n"
+        guess = window.prompt("Guess a letter:").lower()
 
-    # Main game loop
-    while lives > 0 and '_' in placeholder:
-        output.text += stages[6 - lives] + '
-'
-        guess = window.prompt(f"Lives: {lives} - Guess a letter:")
-        if not guess or len(guess) != 1:
-            output.text += "Invalid input. Try again.
-"
+        if not guess or len(guess) != 1 or not guess.isalpha():
+            output.text += "Invalid input. Please enter a single letter.\n"
             continue
-        guess = guess.lower()
 
-        # Update placeholder or decrement lives
-        if guess in chosen_word:
-            for i, ch in enumerate(chosen_word):
-                if ch == guess:
-                    placeholder[i] = guess
-        else:
+        if guess in correct_letters:
+            output.text += f"You have already guessed {guess}!\n"
+        
+        for idx, letter in enumerate(chosen_word):
+            if letter == guess:
+                placeholder[idx] = guess
+                if guess not in correct_letters:
+                    correct_letters.append(guess)
+
+        if guess not in chosen_word:
             lives -= 1
-            output.text += f"You guessed '{guess}', not in word. Lives left: {lives}
-"
+            output.text += f"You guessed {guess}.
+That letter is not in the word.
+You lose a life.\n"
+            if lives == 0:
+                game_over = True
+                output.text += f"\n***********************YOU LOSE**********************\nThe word was: {chosen_word}\n"
 
-        output.text += 'Word: ' + ' '.join(placeholder) + '
-'
+        output.text += "Word to guess: " + ' '.join(placeholder) + "\n"
 
-    # End of game
-    if '_' not in placeholder:
-        output.text += "You win!
-"
-    else:
-        output.text += f"You lose. The word was: {chosen_word}
-"
+        if '_' not in placeholder:
+            game_over = True
+            output.text += "\n****************************YOU WIN****************************\n"
 
-# Bind button
-from browser import document
-
-document['run-button'].bind('click', run_game)
-
-# Bind button
-from browser import document
+        output.text += stages[6 - lives] + "\n"
 
 document['run-button'].bind('click', run_game)
     </script>
