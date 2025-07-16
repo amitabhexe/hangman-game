@@ -16,7 +16,7 @@
         }
         #output {
             font-family: 'Fira Code', monospace;
-            white-space: pre-wrap; /* Allow output to wrap */
+            white-space: pre-wrap; /* Allow output to wrap and preserve whitespace */
         }
     </style>
 </head>
@@ -29,9 +29,8 @@
         </header>
 
         <main class="bg-white p-6 rounded-xl shadow-lg">
-            <!-- Python Code Input Area (now hidden) -->
+            <!-- Python Code Input Area (hidden) -->
             <div hidden>
-                <label for="python-code">Hangman Game Code (Python):</label>
                 <textarea id="python-code" spellcheck="false">
 import random
 stages = [r'''
@@ -133,6 +132,7 @@ word_length = len(chosen_word)
 game_over = False
 lives = 6
 print(logo)
+print(f'The solution is {chosen_word}.') # For testing
 
 #Create blanks
 display = []
@@ -140,7 +140,15 @@ for _ in range(word_length):
     display += "_"
 
 while not game_over:
-    guess = input("Guess a letter: ").lower()
+    try:
+        guess = input("Guess a letter: ").lower()
+        if not guess.isalpha() or len(guess) != 1:
+            print("Invalid input. Please enter a single letter.")
+            continue
+    except (TypeError, ValueError):
+        # This handles cases where the user closes the prompt without entering anything
+        print("Game stopped. Please run again to play.")
+        break
 
     if guess in display:
         print(f"You've already guessed {guess}")
@@ -197,6 +205,11 @@ while not game_over:
             const code = document.getElementById("python-code").value;
             const outputArea = document.getElementById("output");
             
+            // Disable button to prevent multiple runs
+            const runButton = document.getElementById('run-button');
+            runButton.disabled = true;
+            runButton.textContent = 'Running...';
+            
             // Clear previous output
             outputArea.innerHTML = ''; 
             
@@ -204,19 +217,10 @@ while not game_over:
             Sk.configure({
                 // This function is called for every `print()` in Python
                 output: function(text) {
-                    // Append text and a newline to the output area
                     outputArea.textContent += text;
-                },
-                // This function is called for `input()` in Python
-                read: function(x) {
-                    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
-                        throw new Error("File not found: '" + x + "'");
-                    }
-                    return Sk.builtinFiles["files"][x];
                 },
                 // This function is called for `input()` with a prompt
                 inputfun: function(prompt) {
-                    // Use a browser prompt to get user input
                     return window.prompt(prompt);
                 },
                 inputfunTakesPrompt: true
@@ -230,11 +234,15 @@ while not game_over:
             // Handle success and errors from the Python script execution
             executionPromise.then(function(mod) {
                 console.log('Script executed successfully.');
+                runButton.disabled = false;
+                runButton.textContent = 'Run Game';
             },
             function(err) {
                 // Display the error message in the output area for debugging
                 outputArea.innerHTML += `<span class="text-red-400">${err.toString()}</span>`;
                 console.error(err.toString());
+                runButton.disabled = false;
+                runButton.textContent = 'Run Game';
             });
         }
 
