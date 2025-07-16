@@ -134,36 +134,56 @@ placeholder = ['_' for _ in chosen_word]
 print("Word to guess: " + ' '.join(placeholder))
 
 def run_game(ev):
-    global lives, placeholder, chosen_word
-    output = document['output']
-    # Clear display
-    output.text = ''
+    # Reinitialize game state on each run
+    lives = 6
+    chosen_word = random.choice(word_list)
+    placeholder = ['_' for _ in chosen_word]
 
+    output = document['output']
+    output.text = ''  # Clear display
+
+    # Display logo and initial word
+    output.text += logo + '
+'
+    output.text += 'Word to guess: ' + ' '.join(placeholder) + '
+'
+
+    # Main game loop
     while lives > 0 and '_' in placeholder:
-        # Show stage
-        output.text += stages[6 - lives] + '\n'
-        # Prompt user
+        output.text += stages[6 - lives] + '
+'
         guess = window.prompt(f"Lives: {lives} - Guess a letter:")
         if not guess or len(guess) != 1:
-            output.text += "Invalid input. Try again.\n"
+            output.text += "Invalid input. Try again.
+"
             continue
         guess = guess.lower()
-        # Update placeholder
+
+        # Update placeholder or decrement lives
         if guess in chosen_word:
             for i, ch in enumerate(chosen_word):
                 if ch == guess:
                     placeholder[i] = guess
         else:
             lives -= 1
+            output.text += f"You guessed '{guess}', not in word. Lives left: {lives}
+"
 
-        # Display word state
-        output.text += "Word: " + ' '.join(placeholder) + '\n'
+        output.text += 'Word: ' + ' '.join(placeholder) + '
+'
 
     # End of game
     if '_' not in placeholder:
-        output.text += "You win!\n"
+        output.text += "You win!
+"
     else:
-        output.text += f"You lose. The word was: {chosen_word}\n"
+        output.text += f"You lose. The word was: {chosen_word}
+"
+
+# Bind button
+from browser import document
+
+document['run-button'].bind('click', run_game)
 
 # Bind button
 from browser import document
