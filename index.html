@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Hangman Game</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Skulpt.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/skulpt.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/skulpt-stdlib.js" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #output {
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap; /* Allow output to wrap */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Hangman Game</h1>
+            <p class="text-gray-600 mt-2">Click the "Run Game" button to start playing!</p>
+        </header>
+
+        <main class="bg-white p-6 rounded-xl shadow-lg">
+            <!-- Python Code Input Area (now hidden) -->
+            <div hidden>
+                <label for="python-code">Hangman Game Code (Python):</label>
+                <textarea id="python-code" spellcheck="false">
+import random
+stages = [r'''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ / \  |
+      |
+=========
+''', r'''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ /    |
+      |
+=========
+''', r'''
+  +---+
+  |   |
+  O   |
+ /|\  |
+      |
+      |
+=========
+''', '''
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========
+''', '''
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========
+''', '''
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========
+''']
+
+logo = r''' 
+ _                                             
+| |                                            
+| |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
+| '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
+| | | | (_| | | | | (_| | | | | | | (_| | | | |
+|_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+                    __/ |                      
+                   |___/    '''
+
+word_list = [
+    'abruptly', 'absurd', 'abyss', 'affix', 'askew', 'avenue', 'awkward', 'axiom', 'azure', 'bagpipes', 
+    'bandwagon', 'banjo', 'bayou', 'beekeeper', 'bikini', 'blitz', 'blizzard', 'boggle', 'bookworm', 
+    'boxcar', 'boxful', 'buckaroo', 'buffalo', 'buffoon', 'buxom', 'buzzard', 'buzzing', 'buzzwords', 
+    'caliph', 'cobweb', 'cockiness', 'croquet', 'crypt', 'curacao', 'cycle', 'daiquiri', 'dirndl', 
+    'disavow', 'dizzying', 'duplex', 'dwarves', 'embezzle', 'equip', 'espionage', 'euouae', 'exodus', 
+    'faking', 'fishhook', 'fixable', 'fjord', 'flapjack', 'flopping', 'fluffiness', 'flyby', 'foxglove', 
+    'frazzled', 'frizzled', 'fuchsia', 'funny', 'gabby', 'galaxy', 'galvanize', 'gazebo', 'giaour', 
+    'gizmo', 'glowworm', 'glyph', 'gnarly', 'gnostic', 'gossip', 'grogginess', 'haiku', 'haphazard', 
+    'hyphen', 'iatrogenic', 'icebox', 'injury', 'ivory', 'ivy', 'jackpot', 'jaundice', 'jawbreaker', 
+    'jaywalk', 'jazziest', 'jazzy', 'jelly', 'jigsaw', 'jinx', 'jiujitsu', 'jockey', 'jogging', 
+    'joking', 'jovial', 'joyful', 'juicy', 'jukebox', 'jumbo', 'kayak', 'kazoo', 'keyhole', 'khaki', 
+    'kilobyte', 'kiosk', 'kitsch', 'kiwifruit', 'klutz', 'knapsack', 'larynx', 'lengths', 'lucky', 
+    'luxury', 'lymph', 'marquis', 'matrix', 'megahertz', 'microwave', 'mnemonic', 'mystify', 'naphtha', 
+    'nightclub', 'nowadays', 'numbskull', 'nymph', 'onyx', 'ovary', 'oxidize', 'oxygen', 'pajama', 
+    'peekaboo', 'phlegm', 'pixel', 'pizazz', 'pneumonia', 'polka', 'pshaw', 'psyche', 'puppy', 
+    'puzzling', 'quartz', 'queue', 'quips', 'quixotic', 'quiz', 'quizzes', 'quorum', 'razzmatazz', 
+    'rhubarb', 'rhythm', 'rickshaw', 'schnapps', 'scratch', 'shiv', 'snazzy', 'sphinx', 'spritz', 
+    'squawk', 'staff', 'strength', 'strengths', 'stretch', 'stronghold', 'stymied', 'subway', 
+    'swivel', 'syndrome', 'thriftless', 'thumbscrew', 'topaz', 'transcript', 'transgress', 
+    'transplant', 'triphthong', 'twelfth', 'twelfths', 'unknown', 'unworthy', 'unzip', 'uptown', 
+    'vaporize', 'vixen', 'vodka', 'voodoo', 'vortex', 'voyeurism', 'walkway', 'waltz', 'wave', 
+    'wavy', 'waxy', 'wellspring', 'wheezy', 'whiskey', 'whizzing', 'whomever', 'wimpy', 
+    'witchcraft', 'wizard', 'woozy', 'wristwatch', 'wyvern', 'xylophone', 'yachtsman', 'yippee', 
+    'yoked', 'youthful', 'yummy', 'zephyr', 'zigzag', 'zigzagging', 'zilch', 'zipper', 'zodiac', 'zombie'
+]
+
+chosen_word = random.choice(word_list)
+word_length = len(chosen_word)
+game_over = False
+lives = 6
+print(logo)
+
+#Create blanks
+display = []
+for _ in range(word_length):
+    display += "_"
+
+while not game_over:
+    guess = input("Guess a letter: ").lower()
+
+    if guess in display:
+        print(f"You've already guessed {guess}")
+
+    #Check guessed letter
+    for position in range(word_length):
+        letter = chosen_word[position]
+        if letter == guess:
+            display[position] = letter
+
+    #Check if user is wrong.
+    if guess not in chosen_word:
+        print(f"You guessed {guess}, that's not in the word. You lose a life.")
+        lives -= 1
+        if lives == 0:
+            game_over = True
+            print("You lose.")
+            print(f"The word was: {chosen_word}")
+
+    #Join all the elements in the list and turn it into a String.
+    print(f"{' '.join(display)}")
+
+    #Check if user has got all letters.
+    if "_" not in display:
+        game_over = True
+        print("You win.")
+
+    print(stages[lives])
+                </textarea>
+            </div>
+
+            <!-- Run Button -->
+            <div class="text-center my-6">
+                <button id="run-button" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform hover:scale-105 transition-transform duration-200 shadow-md">
+                    Run Game
+                </button>
+            </div>
+
+            <!-- Output Display Area -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-700 mb-2">Game Output:</h2>
+                <pre id="output" class="w-full min-h-[200px] p-4 bg-gray-900 text-white rounded-lg break-words"></pre>
+            </div>
+        </main>
+
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>Powered by <a href="http://www.skulpt.org" target="_blank" class="text-blue-500 hover:underline">Skulpt.js</a>. Hosted on GitHub Pages.</p>
+        </footer>
+    </div>
+
+    <script type="text/javascript">
+        // Function to configure and run the Python code using Skulpt
+        function runit() {
+            const code = document.getElementById("python-code").value;
+            const outputArea = document.getElementById("output");
+            
+            // Clear previous output
+            outputArea.innerHTML = ''; 
+            
+            // Configure Skulpt
+            Sk.configure({
+                // This function is called for every `print()` in Python
+                output: function(text) {
+                    // Append text and a newline to the output area
+                    outputArea.textContent += text;
+                },
+                // This function is called for `input()` in Python
+                read: function(x) {
+                    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+                        throw new Error("File not found: '" + x + "'");
+                    }
+                    return Sk.builtinFiles["files"][x];
+                },
+                // This function is called for `input()` with a prompt
+                inputfun: function(prompt) {
+                    // Use a browser prompt to get user input
+                    return window.prompt(prompt);
+                },
+                inputfunTakesPrompt: true
+            });
+
+            // Wrap the execution in a promise to handle asynchronous operations
+            const executionPromise = Sk.misceval.asyncToPromise(function() {
+                return Sk.importMainWithBody("<stdin>", false, code, true);
+            });
+
+            // Handle success and errors from the Python script execution
+            executionPromise.then(function(mod) {
+                console.log('Script executed successfully.');
+            },
+            function(err) {
+                // Display the error message in the output area for debugging
+                outputArea.innerHTML += `<span class="text-red-400">${err.toString()}</span>`;
+                console.error(err.toString());
+            });
+        }
+
+        // Add event listener to the run button
+        document.getElementById('run-button').addEventListener('click', runit);
+    </script>
+
+</body>
+</html>
